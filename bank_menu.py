@@ -67,7 +67,7 @@ def Bank_Menu(n,mydb):
         
         elif n==5:
             acc_number = int(input('Please Enter your Account Number- '))
-            q1 = "delete * from customer_details where acc_no = %s"
+            q1 = "delete from customer_details where acc_no = %s"
             val= (acc_number,)
             cursor.execute(q1,val)
             print('Account Deleted succesfully')
