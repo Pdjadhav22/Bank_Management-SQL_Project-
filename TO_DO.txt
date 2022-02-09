@@ -1,6 +1,6 @@
 # Bank_Management-SQL_Project-
 
-# Features to add-
+# Features / Files to add-
  1. Make front end UI
  2. create ReadMe file to Explain project
 
