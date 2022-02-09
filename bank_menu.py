@@ -1,5 +1,7 @@
 # Bank Menu
 import pandas as pd
+import datetime as dt
+from bank_table_creation import Trans_ID, update_acc_balance
 def Bank_Menu(n,mydb):
     cursor = mydb.cursor()
     go_on = 'y'
@@ -19,6 +21,12 @@ def Bank_Menu(n,mydb):
             mob_no = input('Please enter your Mobile number- ')
             gender = input('Please enter your Gender M/F/O- ')
             cr_amt = input('Please enter your Credit amount- ')
+            Trans_description = 'Account opening credit'
+            trans_date = dt.datetime.now().date()
+            q1 = 'insert into transaction_details values (%s,%s,%s,%s,%s,%s)'
+            val= (acc_number,Trans_description,trans_date,0,cr_amt,Trans_ID())
+            cursor.execute(q1,val)
+            mydb.commit()
             q1 = 'insert into customer_details values (%s,%s,%s,%s,%s)'
             val= (acc_number,acc_name,mob_no,gender,cr_amt)
             cursor.execute(q1,val)
@@ -32,15 +40,46 @@ def Bank_Menu(n,mydb):
             if sel== 1:
                 amt =int(input('Please enter amount to Withdrawl- '))
                 # check acc_bal
-                q1 = '''select cr_amt from customer_details
+                
+                q1 = '''select acc_balance from customer_details
                         where acc_no = %s'''
                 val = (acc_number,)
                 cur = mydb.cursor()
                 cur.execute(q1,val)
                 curr_acc_bal = cur.fetchone()[0]
-                if amt < curr_acc_bal:
+                if amt <= curr_acc_bal:
+                    # record transaction in Transaction_details
+                    Trans_description = input('Enter Transaction Description: ')
+                    trans_date = dt.datetime.now().date()
+                    q1 = 'insert into transaction_details values (%s,%s,%s,%s,%s,%s)'
+                    val= (acc_number,Trans_description,trans_date,amt,0,Trans_ID())
+                    cursor.execute(q1,val)
+                    mydb.commit()
+                    new_bal = curr_acc_bal-amt
+                    update_acc_balance(new_bal,acc_number)
                     print('Withdrawl Completed')
-                    print('Balance availabe = Rs.',curr_acc_bal-amt) 
+                    print('Balance availabe = Rs.',new_bal) 
+                else:
+                    print('Insufficient Amount, Please try again')
+            else:
+                amt =int(input('Please enter amount to Deposit- '))              
+                q1 = '''select acc_balance from customer_details
+                        where acc_no = %s'''
+                val = (acc_number,)
+                cur = mydb.cursor()
+                cur.execute(q1,val)
+                curr_acc_bal = cur.fetchone()[0]
+                # record transaction in Transaction_details
+                Trans_description = input('Enter Transaction Description: ')
+                trans_date = dt.datetime.now().date()
+                q1 = 'insert into transaction_details values (%s,%s,%s,%s,%s,%s)'
+                val= (acc_number,Trans_description,trans_date,0,amt,Trans_ID())
+                cursor.execute(q1,val)
+                mydb.commit()
+                new_bal = curr_acc_bal+amt
+                update_acc_balance(new_bal,acc_number)
+                print('Deposit Completed')
+                print('Balance availabe = Rs.',new_bal) 
         
         elif n==3:
             acc_number = int(input('Please Enter your Account Number- '))
