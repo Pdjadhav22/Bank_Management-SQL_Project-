@@ -1,0 +1,11 @@
+# Bank_Management-SQL_Project-
+
+# Features to add-
+ 1. Make front end UI
+ 2. create ReadMe file to Explain project
+
+
+# General Suggestions -
+1. Try to Reduce code lines in bank_menu
+2. Many repetative line , try to reduce
+3. 
